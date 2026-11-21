@@ -3,7 +3,7 @@ import json, os, re, urllib.request, datetime
 
 D = json.loads(re.search(r"const DATA = (\{.*?\});\n", open("index.html", encoding="utf-8").read(), re.S).group(1))
 WEEKS = [w["name"] for w in D.get("weeks", [])] or ["База"]
-START = datetime.date(2026, 11, 16)
+START = datetime.date(*map(int, D.get("start", "2026-11-16").split("-")))
 APP = "https://shvan369-creator.github.io/moy-trener/"
 # день недели (0=пн): время приёмов пищи по порядку меню
 MEALS = {0: "08:00 13:30 16:30 11:15 22:30", 1: "09:00 12:00 16:00 18:30 22:45 23:15",
@@ -47,6 +47,6 @@ def main():
         n = (day - START).days // 7
         wk = WEEKS[0] if n < 0 else WEEKS[n % len(WEEKS)]
         send(f"💪 <b>Через 30 минут тренировка {w['code']}</b>\n{w['title'].capitalize()} · неделя «{wk}»\n"
-             "Приготовь гирю, гантель, стул и полотенце, налей воды. Открой приложение и нажми «Начать тренировку».")
+             "Приготовь гантели, стул и полотенце, налей воды. Открой приложение и нажми «Начать тренировку».")
 
 main()
