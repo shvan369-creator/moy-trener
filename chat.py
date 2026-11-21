@@ -4,7 +4,7 @@ import json, os, re, time, datetime, urllib.request
 D = json.loads(re.search(r"const DATA = (\{.*?\});\n", open("index.html", encoding="utf-8").read(), re.S).group(1))
 API = "https://api.telegram.org/bot" + os.environ["TELEGRAM_TOKEN"] + "/"
 CHAT = int(os.environ["CHAT_ID"])
-START = datetime.date(2026, 11, 16)
+START = datetime.date(*map(int, D.get("start", "2026-11-16").split("-")))
 TRAIN = {0: 0, 2: 1, 4: 2}
 TRAIN_TIME = "10:00"
 DN = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"]
@@ -63,7 +63,9 @@ def training(d, word="Сегодня"):
     t = (f"💪 <b>{word} тренировка {w['code']} в {TRAIN_TIME}</b>\n{w['title'].capitalize()} · неделя «{W['name']}»\n"
          f"{W['text']}\n\n<b>Мобильность, 8–10 мин:</b>\n")
     t += "\n".join(f"• {m['name']} — {m['dose']}" for m in w["mob"])
-    t += "\n\n<b>Основная часть:</b>\n" + "\n".join(f"{i}. {e['name']} — {adj(e['sets'], wi)}" for i, e in enumerate(w["ex"], 1))
+    t += "\n\n<b>Основная часть:</b>\n" + "\n".join(
+        f"{i}. {e['name']} — {adj(e['sets'], wi)}" + (f"\n    🏋 {e['weight']}" if e.get("weight") else "")
+        for i, e in enumerate(w["ex"], 1))
     t += "\n\nОтдых между подходами 60–90 сек. Техника и таймер — в приложении."
     return t
 
